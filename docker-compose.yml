@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  php-apache-env:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.php
+    restart: always
+    ports:
+      - ${APACHE_PORT}:80
+    depends_on:
+      - mysql_db
+
+  mysql_db:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.mysql
+      args:
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+# # Included for debugging
+  phpmyadmin:
+    image: phpmyadmin:latest
+    restart: always
+    ports:
+      - 8001:80
+    environment:
+      PMA_HOST: mysql_db
+    depends_on:
+      - mysql_db
