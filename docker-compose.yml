@@ -8,7 +8,7 @@ services:
     ports:
       - ${APACHE_PORT}:80
     volumes:
-      - ./src/doogle:/var/www/html
+      - /Users/safesploit/Documents/GitHub/doogle:/var/www/html:ro
     depends_on:
       - mysql_db
 
