@@ -1,5 +1,31 @@
 #!/bin/bash
-# set -e
+
+# Define ANSI escape codes for color formatting globally
+# GREEN='\e[32m'
+# RED='\e[31m'
+# RESET='\e[0m'
+
+# macOS
+GREEN=$(tput setaf 2)
+RED=$(tput setaf 1)
+RESET=$(tput sgr0)
+
+generate_password() {
+  local length="$1"
+  local characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  local password=""
+
+  if [ -z "$length" ]; then
+    length=12  # Default password length
+  fi
+
+  for i in $(seq 1 "$length"); do
+    random_char="${characters:RANDOM % ${#characters}:1}"
+    password="${password}${random_char}"
+  done
+
+  echo "$password"
+}
 
 # Function to load environment variables from .env file
 load_env() {
@@ -26,21 +52,17 @@ clone_app_repo() {
   fi
 }
 
-# Function to update the config.php file
 update_config_php() {
   local target_dir="src"
   local config_php_file="${target_dir}/config.php"
+  local backup_config_php_file="${config_php_file}-e" # Created by sed -e
 
-  # Check if the config.php file exists
   if [ -f "$config_php_file" ]; then
-    # Insert environment variable references after the variable names
     sed -i -e "s/\(\$dbname =\) \".*\";/\1 \"\${MYSQL_DB_NAME}\";/" "$config_php_file"
     sed -i -e "s/\(\$dbhost =\) \".*\";/\1 \"\${MYSQL_DB_HOST}\";/" "$config_php_file"
     sed -i -e "s/\(\$dbuser =\) \".*\";/\1 \"\${MYSQL_DB_USER}\";/" "$config_php_file"
     sed -i -e "s/\(\$dbpass =\) \".*\";/\1 \"\${MYSQL_DB_PASSWORD}\";/" "$config_php_file"
     
-    # Remove backup files created by sed
-    rm -f "${config_php_file}-e"  
     echo "Updated $config_php_file with environment variable references."
   else
     echo "Error: $config_php_file not found. Please check your repository structure."
@@ -48,13 +70,62 @@ update_config_php() {
   fi
 }
 
-# Function to replace placeholders in the SQL script
 update_create_user_sql() {
-  local password="$1"
-  sed -i "s#'PASSWORD_HERE'#'$password'#g" config/doogle-user.sql || { echo "Error: Failed to replace placeholders in the SQL script."; exit 1; }
+  local sql_file="config/doogle-user.sql"
+  local mysql_db_password="$MYSQL_DB_PASSWORD"
+
+  if [ -f "$sql_file" ]; then
+    sed -i -e "s#IDENTIFIED BY '[^']*'#IDENTIFIED BY '$mysql_db_password'#g" "$sql_file" || {
+      echo "Error: Failed to update the MySQL user password in the SQL script."
+      exit 1
+    }
+    echo "Updated the MySQL user password in $sql_file."
+  else
+    echo "Error: $sql_file not found. Please check your repository structure."
+    exit 1
+  fi
 }
 
-# Function to start Docker containers using Docker Compose
+# Updates the e.nv password for database root user
+update_mysql_root_password_env() {
+  local new_mysql_root_password="$1"
+  local env_file=".env"
+
+  if [ -f "$env_file" ]; then
+    sed -i -e "s/^MYSQL_ROOT_PASSWORD=.*/MYSQL_ROOT_PASSWORD=\"$new_mysql_root_password\"/" "$env_file" || {
+      echo "Error: Failed to update MYSQL_ROOT_PASSWORD in $env_file."
+      exit 1
+    }
+    echo "MYSQL_ROOT_PASSWORD updated successfully in $env_file."
+  else
+    echo "Error: $env_file not found. Please check your repository structure."
+    exit 1
+  fi
+}
+
+# Updates the .env password for database user
+update_mysql_password_env() {
+  local new_mysql_password="$1"
+  local env_file=".env"
+
+  if [ -f "$env_file" ]; then
+    sed -i -e "s/^MYSQL_DB_PASSWORD=.*/MYSQL_DB_PASSWORD=\"$new_mysql_password\"/" "$env_file" || {
+      echo "Error: Failed to update MYSQL_DB_PASSWORD in $env_file."
+      exit 1
+    }
+    echo "MYSQL_DB_PASSWORD updated successfully in $env_file."
+  else
+    echo "Error: $env_file not found. Please check your repository structure."
+    exit 1
+  fi
+}
+
+cleanup_backup_files() {
+  find . -type f -name '*-e' -exec rm -f {} +
+  echo "Cleanup completed. Removed files ending with '-e'"
+}
+
+
 start_containers() {
   docker-compose up -d --build || { echo "Error: Failed to start Docker containers."; exit 1; }
 }
@@ -64,10 +135,11 @@ main() {
   load_env
   clone_app_repo
   update_config_php
-  update_create_user_sql "${MYSQL_PASSWORD}"
-  start_containers
+  update_create_user_sql
+  update_mysql_password_env $(generate_password 20)
+  update_mysql_root_password_env $(generate_password 20)
+  cleanup_backup_files
+  # start_containers
 }
 
-# Call the main function to initiate the build process
 main
-
