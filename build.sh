@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+# set -e
 
 # Function to load environment variables from .env file
 load_env() {
@@ -49,7 +49,7 @@ update_config_php() {
 }
 
 # Function to replace placeholders in the SQL script
-replace_password_placeholder() {
+update_create_user_sql() {
   local password="$1"
   sed -i "s#'PASSWORD_HERE'#'$password'#g" config/doogle-user.sql || { echo "Error: Failed to replace placeholders in the SQL script."; exit 1; }
 }
@@ -64,8 +64,7 @@ main() {
   load_env
   clone_app_repo
   update_config_php
-  replace_password_placeholder "${MYSQL_DOOGLE_PASSWORD}"
-  generate_config_php
+  update_create_user_sql "${MYSQL_PASSWORD}"
   start_containers
 }
 
