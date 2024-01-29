@@ -148,10 +148,10 @@ start_containers() {
 main() {
   load_env ".env"
   clone_app_repo ${GIT_REPO_URL}
-  update_config_php "config.php"
-  update_create_user_sql "sql-user.sql"
   update_mysql_password_env $(generate_password 20)
   update_mysql_root_password_env $(generate_password 20)
+  update_config_php "config.php"
+  update_create_user_sql "sql-user.sql"
   cleanup_backup_files
   # echo_passwords
   start_containers
