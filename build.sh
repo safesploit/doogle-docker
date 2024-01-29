@@ -63,11 +63,12 @@ start_containers() {
 main() {
   load_env
   clone_app_repo
+  update_config_php
   replace_password_placeholder "${MYSQL_DOOGLE_PASSWORD}"
   generate_config_php
   start_containers
 }
 
 # Call the main function to initiate the build process
-# main
-update_config_php
+main
+
