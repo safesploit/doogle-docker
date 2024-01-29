@@ -4,7 +4,7 @@
 # Ignore directories containing generated files (add more as needed)
 /vendor/
 /node_modules/
-doogle/
 
 #
 /src/
+/doogle/

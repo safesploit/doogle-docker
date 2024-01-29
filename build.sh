@@ -154,7 +154,7 @@ main() {
   update_mysql_root_password_env $(generate_password 20)
   cleanup_backup_files
   # echo_passwords
-  # start_containers
+  start_containers
 }
 
 main
