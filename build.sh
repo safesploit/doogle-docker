@@ -139,6 +139,11 @@ echo_passwords() {
   echo "${MYSQL_ROOT_USER}:${MYSQL_ROOT_PASSWORD}"
 }
 
+wait_for_database() {
+  echo "Please be patient while the database is starting up..."
+  sleep 5  # Wait for 5 seconds to display the message
+  echo "Accessible via http://localhost:${APACHE_PORT}"
+}
 
 start_containers() {
   docker-compose up -d --build || { 
@@ -146,6 +151,8 @@ start_containers() {
     exit 1; 
     }
 }
+
+
 
 # Main function that orchestrates the build process
 main() {
@@ -158,6 +165,7 @@ main() {
   cleanup_backup_files
   # echo_passwords
   start_containers
+  wait_for_database
 }
 
 main
