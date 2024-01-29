@@ -3,6 +3,33 @@
 ## Table of Contents
 
 
+## MySQL Credentials
+
+The credentials are stored in `.env` file.
+
+```
+user@vm(~/doogle-docker) $ cat .env
+# APACHE-PHP-ENV
+APACHE_PORT="8010"
+
+# PHP
+PHP_PORT="7000"
+
+# MYSQL
+MYSQL_PORT="9906"
+MYSQL_DB_HOST="mysql_db"
+MYSQL_DB_NAME="doogle"
+MYSQL_DB_USER="doogle"
+MYSQL_DB_PASSWORD=""
+
+# MYSQL ROOT USER
+MYSQL_ROOT_USER="root"
+MYSQL_ROOT_PASSWORD=""
+
+# GIT REPO
+GIT_REPO_URL="https://github.com/safesploit/doogle.git"
+```
+
 ## Build.sh script
 
 ### Function Loading Order Explanation
