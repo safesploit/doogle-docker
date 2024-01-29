@@ -2,6 +2,16 @@
 
 ## Table of Contents
 
+## Getting Started
+
+```
+git clone https://github.com/safesploit/doogle-docker.git
+cd doogle-docker
+
+chmod +x build.sh
+./build.sh
+```
+
 
 ## MySQL Credentials
 
