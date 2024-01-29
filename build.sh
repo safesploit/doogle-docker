@@ -63,10 +63,11 @@ update_config_php() {
   local config_php_file="${target_dir}/${filename}"
 
   if [ -f "$config_php_file" ]; then
-    sed -i -e "s/\(\$dbname =\) \".*\";/\1 \"\${MYSQL_DB_NAME}\";/" "$config_php_file"
-    sed -i -e "s/\(\$dbhost =\) \".*\";/\1 \"\${MYSQL_DB_HOST}\";/" "$config_php_file"
-    sed -i -e "s/\(\$dbuser =\) \".*\";/\1 \"\${MYSQL_DB_USER}\";/" "$config_php_file"
-    sed -i -e "s/\(\$dbpass =\) \".*\";/\1 \"\${MYSQL_DB_PASSWORD}\";/" "$config_php_file"
+    # Replace the variables with getenv calls
+    sed -i -e "s/\(\$dbname =\) \".*\";/\1 getenv('MYSQL_DB_NAME');/" "$config_php_file"
+    sed -i -e "s/\(\$dbhost =\) \".*\";/\1 getenv('MYSQL_DB_HOST');/" "$config_php_file"
+    sed -i -e "s/\(\$dbuser =\) \".*\";/\1 getenv('MYSQL_DB_USER');/" "$config_php_file"
+    sed -i -e "s/\(\$dbpass =\) \".*\";/\1 getenv('MYSQL_DB_PASSWORD');/" "$config_php_file"
     
     echo "${GREEN}Updated${RESET} $config_php_file with environment variable references."
   else
@@ -74,6 +75,7 @@ update_config_php() {
     exit 1
   fi
 }
+
 
 update_create_user_sql() {
   local filename="$1"
@@ -154,7 +156,7 @@ main() {
   update_create_user_sql "sql-user.sql"
   cleanup_backup_files
   # echo_passwords
-  # start_containers
+  start_containers
 }
 
 main
