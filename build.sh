@@ -26,36 +26,23 @@ clone_app_repo() {
   fi
 }
 
-# Function to generate and move the config.php file
-generate_config_php() {
-  local target_dir="src/doogle"
+# Function to update the config.php file
+update_config_php() {
+  local target_dir="src"
   local config_php_file="${target_dir}/config.php"
 
-  # Create the config.php file with environment variables
-  echo "<?php
-  ob_start();
-
-  \$dbname = 'doogle';
-  \$dbhost = 'mysql_db'; // Docker image hostname
-  \$dbuser = 'doogle';
-  \$dbpass = '${MYSQL_ROOT_PASSWORD}'; // Use the MYSQL_ROOT_PASSWORD from .env
-
-  try 
-  {
-    \$con = new PDO('mysql:dbname=' . \$dbname . ';host=' . \$dbhost, \$dbuser, \$dbpass);
-    \$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
-  }
-  catch(PDOException \$e) 
-  {
-    echo 'Connection failed: ' . \$e->getMessage();
-  }
-  ?>" > "$config_php_file"
-
-  echo "Generated config.php file."
-
-  # Move the config.php file to the target directory
-  mv "$config_php_file" "$target_dir/"
-  echo "Moved config.php file to $target_dir/"
+  # Check if the config.php file exists
+  if [ -f "$config_php_file" ]; then
+    # Insert environment variable references after the variable names
+    sed -i -e "s/\(\$dbname =\) \"\.*\";/\1 \"\${MYSQL_DB_NAME}\";/" \
+           -e "s/\(\$dbhost =\) \"\.*\";/\1 \"\${MYSQL_DB_HOST}\";/" \
+           -e "s/\(\$dbuser =\) \"\.*\";/\1 \"\${MYSQL_DB_USER}\";/" \
+           -e "s/\(\$dbpass =\) \"\.*\";/\1 \"\${MYSQL_DB_PASSWORD}\";/" "$config_php_file"
+    echo "Updated $config_php_file with environment variable references."
+  else
+    echo "Error: $config_php_file not found. Please check your repository structure."
+    exit 1
+  fi
 }
 
 # Function to replace placeholders in the SQL script
@@ -79,4 +66,5 @@ main() {
 }
 
 # Call the main function to initiate the build process
-main
+# main
+update_config_php
