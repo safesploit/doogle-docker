@@ -156,7 +156,7 @@ main() {
   update_create_user_sql "sql-user.sql"
   cleanup_backup_files
   # echo_passwords
-  # start_containers
+  start_containers
 }
 
 main
