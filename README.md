@@ -26,3 +26,24 @@ In the bash script `build.sh`, the critical order is ensuring that passwords are
 8. **`start_containers`**: If uncommented, this function starts Docker containers. Its position at the end of the script indicates that it should be the last step in the process, after all other preparations have been completed.
 
 By following this order, you ensure that each function has the necessary information and resources available to perform its specific task correctly, leading to a smooth and error-free execution of your script.
+
+## Explanation: The Need for the `ALTER USER` Command
+
+In the SQL script, an issue arises when creating a user with an initial empty password:
+
+```sql
+CREATE USER IF NOT EXISTS 'doogle'@'%' IDENTIFIED WITH 'caching_sha2_password' BY '';
+```
+
+While this approach is acceptable in some cases, it may lead to authentication issues, especially when using certain authentication methods like 'caching_sha2_password'.
+
+
+Here's why the `ALTER USER` command is necessary:
+
+- **Proper Password Assignment**: The `CREATE USER` statement sets an empty password initially. This can cause problems with authentication because many authentication methods, including 'caching_sha2_password', require a non-empty password for security reasons.
+
+- **Updating Password**: The `ALTER USER` statement is used to update the user's password to a secure and non-empty value, such as 'o2zE7yfG9zPCU0gMt4Un'. This ensures that the 'doogle' user has a valid password that can be used for authentication.
+
+- **Preventing Authentication Errors**: By updating the password with `ALTER USER`, you prevent authentication errors that could occur when attempting to log in with an empty password. It ensures that the user can authenticate successfully.
+
+In summary, the `ALTER USER` command is needed to correct the initial empty password and assign a secure password to the user, ensuring proper authentication and preventing potential issues related to empty passwords.

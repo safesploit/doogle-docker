@@ -10,3 +10,4 @@ SET time_zone = "+00:00";
 --
 CREATE USER IF NOT EXISTS 'doogle'@'%' IDENTIFIED WITH 'caching_sha2_password' BY '';
 GRANT SELECT, INSERT, UPDATE ON `doogle`.* TO 'doogle'@'%';
+ALTER USER 'doogle'@'%' IDENTIFIED WITH 'caching_sha2_password' BY '';

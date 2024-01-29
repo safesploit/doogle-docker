@@ -87,6 +87,7 @@ update_create_user_sql() {
       echo "Error: Failed to update the MySQL user password in the SQL script."
       exit 1
     }
+
     echo "${GREEN}Updated${RESET} $sql_file with environment variable references."
   else
     echo "Error: $sql_file not found. Please check your repository structure."
