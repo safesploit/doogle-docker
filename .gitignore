@@ -12,3 +12,5 @@
 # Exempt Configuration Files
 .env
 config/sql-user.sql
+.env
+*.sql
