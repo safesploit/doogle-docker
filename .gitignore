@@ -10,8 +10,5 @@
 /doogle/
 
 # Exempt Configuration Files
-/config/*.sql
-*.env
-
 .env
 config/sql-user.sql
