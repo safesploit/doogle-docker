@@ -8,3 +8,7 @@
 #
 /src/
 /doogle/
+
+# Exempt Configuration Files
+/config/*.sql
+*.env
