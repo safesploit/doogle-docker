@@ -1,0 +1,16 @@
+# macOS system files
+.DS_Store
+
+# Ignore directories containing generated files (add more as needed)
+/vendor/
+/node_modules/
+
+#
+/src/
+/doogle/
+
+# Exempt Configuration Files
+.env
+*.sql
+config/sql-user.sql
+.env
