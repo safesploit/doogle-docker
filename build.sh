@@ -83,7 +83,7 @@ update_create_user_sql() {
   local mysql_db_password="$MYSQL_DB_PASSWORD"
 
   if [ -f "$sql_file" ]; then
-    sed -i -e "s#IDENTIFIED BY '[^']*'#IDENTIFIED BY '$mysql_db_password'#g" "$sql_file" || {
+    sed -i -e "s#BY '[^']*'#BY '$mysql_db_password'#g" "$sql_file" || {
       echo "Error: Failed to update the MySQL user password in the SQL script."
       exit 1
     }
@@ -156,7 +156,7 @@ main() {
   update_create_user_sql "sql-user.sql"
   cleanup_backup_files
   # echo_passwords
-  start_containers
+  # start_containers
 }
 
 main

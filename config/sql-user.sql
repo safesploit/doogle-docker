@@ -8,5 +8,5 @@ SET time_zone = "+00:00";
 --
 -- User Creation: `doogle`
 --
-CREATE USER IF NOT EXISTS 'doogle'@'%' IDENTIFIED BY '';
+CREATE USER IF NOT EXISTS 'doogle'@'%' IDENTIFIED WITH 'caching_sha2_password' BY '';
 GRANT SELECT, INSERT, UPDATE ON `doogle`.* TO 'doogle'@'%';
