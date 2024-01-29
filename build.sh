@@ -34,10 +34,13 @@ update_config_php() {
   # Check if the config.php file exists
   if [ -f "$config_php_file" ]; then
     # Insert environment variable references after the variable names
-    sed -i -e "s/\(\$dbname =\) \"\.*\";/\1 \"\${MYSQL_DB_NAME}\";/" \
-           -e "s/\(\$dbhost =\) \"\.*\";/\1 \"\${MYSQL_DB_HOST}\";/" \
-           -e "s/\(\$dbuser =\) \"\.*\";/\1 \"\${MYSQL_DB_USER}\";/" \
-           -e "s/\(\$dbpass =\) \"\.*\";/\1 \"\${MYSQL_DB_PASSWORD}\";/" "$config_php_file"
+    sed -i -e "s/\(\$dbname =\) \".*\";/\1 \"\${MYSQL_DB_NAME}\";/" "$config_php_file"
+    sed -i -e "s/\(\$dbhost =\) \".*\";/\1 \"\${MYSQL_DB_HOST}\";/" "$config_php_file"
+    sed -i -e "s/\(\$dbuser =\) \".*\";/\1 \"\${MYSQL_DB_USER}\";/" "$config_php_file"
+    sed -i -e "s/\(\$dbpass =\) \".*\";/\1 \"\${MYSQL_DB_PASSWORD}\";/" "$config_php_file"
+    
+    # Remove backup files created by sed
+    rm -f "${config_php_file}-e"  
     echo "Updated $config_php_file with environment variable references."
   else
     echo "Error: $config_php_file not found. Please check your repository structure."
